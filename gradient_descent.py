@@ -1,15 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[150]:
-
-
 import autograd as ag
 import autograd.numpy as np
 from autograd.numpy import linalg as LA
-# import numpy as nump
 import scipy
-
 import random
 import math
 import pandas as pd
@@ -20,19 +12,11 @@ from scipy.interpolate import griddata
 from mpl_toolkits.mplot3d import Axes3D
 from itertools import chain, combinations, combinations_with_replacement
 import itertools
-
 import time
-
 import qutip as qt
-
 from scipy.stats import unitary_group
-
 import itertools
 from itertools import chain, combinations, combinations_with_replacement, product
-
-
-# In[24]:
-
 
 def phip(N,q): ##generate the φ+ state for N quqits
     d=q**N
@@ -108,7 +92,7 @@ def swap_gen(N,i,j,q): ### generates the swap operator S_{ij} where i and j are 
     
     identity_list=[qt.qeye(q) for i in range(N)] ###list with 1 everywhere
     matrices_list=generate_matrices(q) ###list of all 2x2 matrices with one 1
-    
+
     index=list(product(list(range(0,q**2)),repeat=len(i)))
     
     id_copy=identity_list.copy()
@@ -125,9 +109,6 @@ def swap_gen(N,i,j,q): ### generates the swap operator S_{ij} where i and j are 
     swap=sum(swap_list)
     
     return swap
-
-
-# In[39]:
 
 
 #Gradient descent-specific functions
@@ -156,9 +137,6 @@ def E_p_grad_st(U,q): ###Calculates d(lta)/dU*(U)
     return gradst
 
 
-# In[156]:
-
-
 def grad_asc(U, q, step_cutoff, conv_cutoff, grad_cutoff, time_cutoff):
 
     N=2
@@ -168,15 +146,12 @@ def grad_asc(U, q, step_cutoff, conv_cutoff, grad_cutoff, time_cutoff):
 
     E_p_init = opentp(q,U)
     time_flag=[]
-    # E_p_save=[]
-    # u_save=U
 
     t1=time.time()
 
 
     while break_flag==False:
-        # E_p_save.append(E_p_init)
-        gamma = E_p_grad_st(U,q) #if this is the correct implementation of gamma, then
+        gamma = E_p_grad_st(U,q)
         G = gamma*U.dag() - U*gamma.dag() #G should be strictly imaginary
         P = qt.Qobj((scipy.linalg.expm(1*step_size*G.full())),dims=G.dims)
         Q = P*P
@@ -216,9 +191,6 @@ def grad_asc(U, q, step_cutoff, conv_cutoff, grad_cutoff, time_cutoff):
     return E_p_fin, U, grad_hs
 
 
-# In[197]:
-
-
 ### Gradient ascent for 2 quqits starting from random unitary
 
 E_p_list=[]
@@ -247,9 +219,6 @@ for q in range(2,qmax):
     bound_list.append(1-2/(d+1))
 
 
-# In[200]:
-
-
 ##export data
 
 quqitsizes=[i for i in range(2,qmax)]
@@ -257,10 +226,3 @@ dgrad={'Quqit size q':quqitsizes}
 dgrad.update({'Max Operator entangling power':E_p_list, 'Riemannian gradient HS norm squared at max':riem_grad_norm_list, 'Perfect Tensor Operator entangling power':perfect_list,'Upper Bound Operator entangling power':bound_list})
 dgrad=pd.DataFrame(dgrad)
 dgrad.to_csv("gradient_ascent.csv",index=False)
-
-
-# In[ ]:
-
-
-
-
